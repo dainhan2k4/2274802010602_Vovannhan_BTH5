@@ -22,7 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
-    image: String
+    image: String,
+    description: String,
+    size: [String],
+    color: [String],
+    quantity: Number
 });
 
 const Product = mongoose.model('Product', productSchema);
@@ -60,29 +64,76 @@ app.post('/cart/add/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (product) {
-            cart.push(product);
+            const { size, color, quantity } = req.body;
+            const cartItem = {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                size,
+                color,
+                quantity: parseInt(quantity, 10)
+            };
+            cart.push(cartItem);
         }
-        res.redirect('/product');
+        res.redirect('/cart');
     } catch (err) {
         res.status(500).send("Lỗi thêm vào giỏ hàng");
     }
 });
 
+
 // Route xóa sản phẩm khỏi giỏ hàng (xóa từng sản phẩm)
-app.post('/cart/remove/:index', (req, res) => {
-    const index = parseInt(req.params.index, 10);
-    if (!isNaN(index) && index >= 0 && index < cart.length) {
-        cart.splice(index, 1);
+app.post('/cart/add/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (product) {
+            let { size, color, quantity } = req.body;
+            
+            // Chắc chắn quantity là số hợp lệ
+            quantity = parseInt(quantity, 10);
+            if (isNaN(quantity) || quantity <= 0) {
+                quantity = 1; // Mặc định là 1 nếu không hợp lệ
+            }
+
+            const cartItem = {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                size,
+                color,
+                quantity
+            };
+
+            cart.push(cartItem);
+        }
+        res.redirect('/cart');
+    } catch (err) {
+        res.status(500).send("Lỗi thêm vào giỏ hàng");
     }
-    res.redirect('/cart');
 });
+
 
 // Route hiển thị giỏ hàng
 app.get('/cart', (req, res) => {
+    console.log(cart); // Kiểm tra giá trị quantity
     res.render('cart', { cart });
 });
+
 
 // Lắng nghe cổng
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);
+});
+app.post('/cart/remove/:index', (req, res) => {
+    const index = parseInt(req.params.index, 10);
+    if (!isNaN(index) && index >= 0 && index < cart.length) {
+        if (cart[index].quantity > 1) {
+            cart[index].quantity -= 1; // Giảm số lượng
+        } else {
+            cart.splice(index, 1); // Xóa khỏi giỏ nếu số lượng là 1
+        }
+    }
+    res.redirect('/cart');
 });
