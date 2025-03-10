@@ -20,7 +20,10 @@
                         <img src="<%= product.image %>" alt="<%= product.name %>">
                         <h2><%= product.name %></h2>
                         <p>Giá: <%= product.price %> VND</p>
-                        
+                        <p>Kích thước: <%= product.size %></p>
+                        <p>Màu sắc: <%= product.color %></p>
+                        <p>Số lượng: <%= product.quantity %></p>
+                
                         <!-- Form gửi yêu cầu xóa sản phẩm -->
                         <form action="/cart/remove/<%= index %>" method="POST">
                             <button type="submit" class="btn-remove">Xóa</button>
@@ -29,7 +32,7 @@
                 <% }); %>
             </ul>
 
-            <h3>Tổng tiền: <%= cart.reduce((total, product) => total + product.price, 0) %> VND</h3>
+            <h3>Tổng tiền: <%= cart.reduce((total, product) => total + (product.price * product.quantity), 0) %> VND</h3>
         <% } else { %>
             <p>Giỏ hàng của bạn đang trống!</p>
         <% } %>
