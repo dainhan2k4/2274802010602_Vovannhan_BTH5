@@ -12,13 +12,33 @@
         <header class="bg-blue-500 text-white text-center py-4 rounded-lg shadow-md">
             <h1 class="text-xl font-bold">Chi tiết sản phẩm</h1>
         </header>
-        <div class="max-w-lg mx-auto bg-white p-6 mt-6 rounded-lg shadow-lg text-center">
+        
+        <div class="max-w-2xl mx-auto bg-white p-6 mt-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-semibold mb-4"><%= product.name %></h2>
-            <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full h-64 object-cover rounded-lg mb-4">
-            <p class="text-lg text-gray-700 font-semibold">Giá: <span class="text-red-500"><%= product.price %> VNĐ</span></p>
+            <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full h-80 object-cover rounded-lg mb-4">
+            
+            <p class="text-lg text-gray-700 font-semibold">Giá: <span class="text-red-500 font-bold text-xl"><%= product.price %> VNĐ</span></p>
+            
             <form action="/cart/add/<%= product.id %>" method="POST" class="mt-4">
+                <label for="size">Chọn kích thước:</label>
+                <select name="size" id="size" class="border rounded p-2 w-full">
+                    <% product.size.forEach(size => { %>
+                        <option value="<%= size %>"><%= size %></option>
+                    <% }); %>
+                </select>
+            
+                <label for="color">Chọn màu sắc:</label>
+                <select name="color" id="color" class="border rounded p-2 w-full">
+                    <% product.color.forEach(color => { %>
+                        <option value="<%= color %>"><%= color %></option>
+                    <% }); %>
+                </select>
+            
+                <label for="quantity">Số lượng:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required>
                 <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">Thêm vào giỏ hàng</button>
             </form>
+            
             <a href="/product" class="block mt-4 text-blue-500 hover:underline">← Quay lại danh sách</a>
         </div>
     </div>
